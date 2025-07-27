@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Text, DECIMAL, Boolean
 from sqlalchemy.orm import relationship
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, condecimal
+from typing import Optional, List
 from .db import Base
 
 # Modelos SQLAlchemy
@@ -63,3 +63,70 @@ class Locale(LocaleBase):
     
     class Config:
         from_attributes = True  # Replaces orm_mode in Pydantic v2
+
+# Modelos para Menús
+class MenuDB(Base):
+    __tablename__ = 'menus'
+    
+    id = Column(Integer, primary_key=True, index=True)
+    id_local = Column(Integer, ForeignKey('locales.id', ondelete='CASCADE'), nullable=False)
+    nombre_menu = Column(String(100), nullable=False)
+    descripcion = Column(String(255), nullable=True)
+    
+    # Relación con productos
+    productos = relationship("ProductoDB", back_populates="menu", cascade="all, delete-orphan")
+
+class ProductoDB(Base):
+    __tablename__ = 'productos'
+    
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String(100), nullable=False)
+    descripcion = Column(Text, nullable=True)
+    precio = Column(DECIMAL(10, 2), nullable=False)
+    id_menu = Column(Integer, ForeignKey('menus.id', ondelete='CASCADE'), nullable=False)
+    disponible = Column(Boolean, nullable=False, default=True)
+    categoria = Column(String(50), nullable=True)
+    
+    # Relación con menú
+    menu = relationship("MenuDB", back_populates="productos")
+
+# Modelos Pydantic para Menús
+class MenuBase(BaseModel):
+    nombre_menu: str = Field(..., max_length=100)
+    descripcion: Optional[str] = Field(None, max_length=255)
+    id_local: int
+
+class MenuCreate(MenuBase):
+    pass
+
+class Menu(MenuBase):
+    id: int
+    
+    class Config:
+        from_attributes = True
+
+# Modelos Pydantic para Productos
+class ProductoBase(BaseModel):
+    nombre: str = Field(..., max_length=100)
+    descripcion: Optional[str] = None
+    precio: condecimal(gt=0, decimal_places=2)
+    disponible: bool = True
+    categoria: Optional[str] = Field(None, max_length=50)
+    id_menu: int
+
+class ProductoCreate(ProductoBase):
+    pass
+
+class ProductoUpdate(BaseModel):
+    nombre: Optional[str] = Field(None, max_length=100)
+    descripcion: Optional[str] = None
+    precio: Optional[condecimal(gt=0, decimal_places=2)] = None
+    disponible: Optional[bool] = None
+    categoria: Optional[str] = Field(None, max_length=50)
+    id_menu: Optional[int] = None
+
+class Producto(ProductoBase):
+    id: int
+    
+    class Config:
+        from_attributes = True

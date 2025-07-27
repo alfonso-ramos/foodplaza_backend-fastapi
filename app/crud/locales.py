@@ -4,8 +4,11 @@ from ..models import LocaleDB
 def get_locale(db: Session, locale_id: int):
     return db.query(LocaleDB).filter(LocaleDB.id == locale_id).first()
 
-def get_locales(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(LocaleDB).offset(skip).limit(limit).all()
+def get_locales(db: Session, skip: int = 0, limit: int = 100, plaza_id: int = None):
+    query = db.query(LocaleDB)
+    if plaza_id is not None:
+        query = query.filter(LocaleDB.plaza_id == plaza_id)
+    return query.offset(skip).limit(limit).all()
 
 def create_locale(db: Session, locale):
     db_locale = LocaleDB(**locale.dict())
