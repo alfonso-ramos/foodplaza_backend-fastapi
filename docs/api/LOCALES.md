@@ -5,7 +5,7 @@
 - **Ruta**: `/api/locales`
 - **Descripción**: Obtiene un listado de todos los locales registrados.
 - **Parámetros de consulta**:
-  - `plazaId` (opcional): Filtrar locales por ID de plaza
+  - `plaza_id` (opcional): Filtrar locales por ID de plaza
   - `estado` (opcional): Filtrar por estado (activo/inactivo)
 - **Respuesta exitosa (200 OK)**:
   ```json
@@ -15,10 +15,10 @@
       "nombre": "Local 1",
       "descripcion": "Descripción del local",
       "direccion": "Dirección del local",
-      "horarioApertura": "09:00",
-      "horarioCierre": "22:00",
+      "horario_apertura": "09:00",
+      "horario_cierre": "22:00",
       "estado": "activo",
-      "idPlaza": 1
+      "plaza_id": 1
     }
   ]
   ```
@@ -36,10 +36,10 @@
       "nombre": "Local 1",
       "descripcion": "Descripción del local",
       "direccion": "Dirección del local",
-      "horarioApertura": "09:00",
-      "horarioCierre": "22:00",
+      "horario_apertura": "09:00",
+      "horario_cierre": "22:00",
       "estado": "activo",
-      "idPlaza": 1
+      "plaza_id": 1
     }
     ```
   - 404 Not Found: Si no se encuentra el local
@@ -53,16 +53,28 @@
     "nombre": "Nuevo Local",
     "descripcion": "Descripción del nuevo local",
     "direccion": "Dirección del local",
-    "horarioApertura": "09:00",
-    "horarioCierre": "22:00",
+    "horario_apertura": "09:00",
+    "horario_cierre": "22:00",
     "estado": "activo",
-    "idPlaza": 1
+    "plaza_id": 1
   }
   ```
 - **Respuestas**:
-  - 201 Created: Devuelve el local creado
-  - 400 Bad Request: Si los datos son inválidos
-  - 404 Not Found: Si la plaza especificada no existe
+  - 201 Created: Local creado exitosamente
+    ```json
+    {
+      "id": 1,
+      "nombre": "Nuevo Local",
+      "descripcion": "Descripción del nuevo local",
+      "direccion": "Dirección del local",
+      "horario_apertura": "09:00",
+      "horario_cierre": "22:00",
+      "estado": "activo",
+      "plaza_id": 1
+    }
+    ```
+  - 400 Bad Request: Datos de entrada inválidos o formato de hora incorrecto (debe ser HH:MM)
+  - 404 Not Found: La plaza especificada no existe
 
 ## Actualizar un local existente
 - **Método**: `PUT`
@@ -75,10 +87,10 @@
     "nombre": "Local Actualizado",
     "descripcion": "Nueva descripción",
     "direccion": "Nueva dirección",
-    "horarioApertura": "10:00",
-    "horarioCierre": "23:00",
+    "horario_apertura": "10:00",
+    "horario_cierre": "23:00",
     "estado": "activo",
-    "idPlaza": 2
+    "plaza_id": 2
   }
   ```
 - **Respuestas**:

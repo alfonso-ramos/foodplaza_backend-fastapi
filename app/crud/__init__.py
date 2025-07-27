@@ -6,3 +6,11 @@ from .plazas import (
     update_plaza,
     delete_plaza
 )
+
+from .locales import (
+    get_locale,
+    get_locales,
+    create_locale,
+    update_locale,
+    delete_locale
+)
