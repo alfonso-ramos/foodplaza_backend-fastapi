@@ -12,14 +12,15 @@
     "precio": 99.99,
     "disponible": true,
     "categoria": "Hamburguesas",
-    "idMenu": 1
+    "id_menu": 1
   }
   ```
 - **Validaciones**:
   - nombre: obligatorio, máximo 100 caracteres
   - precio: obligatorio, debe ser mayor a 0
   - disponible: opcional, por defecto true
-  - idMenu: obligatorio, debe existir el menú
+  - id_menu: obligatorio, debe existir el menú
+  - categoria: opcional, máximo 50 caracteres
 - **Respuestas**:
   - 201 Created: Producto creado exitosamente
     ```json
@@ -30,36 +31,17 @@
       "precio": 99.99,
       "disponible": true,
       "categoria": "Hamburguesas",
-      "idMenu": 1
+      "id_menu": 1
     }
     ```
   - 400 Bad Request: Datos inválidos o faltantes
   - 404 Not Found: Si el menú no existe
 
-## Obtener todos los productos
-- **Método**: `GET`
-- **Ruta**: `/api/productos`
-- **Descripción**: Obtiene un listado de todos los productos.
-- **Respuesta exitosa (200 OK)**:
-  ```json
-  [
-    {
-      "id": 1,
-      "nombre": "Hamburguesa Clásica",
-      "descripcion": "Deliciosa hamburguesa con queso, lechuga y tomate",
-      "precio": 99.99,
-      "disponible": true,
-      "categoria": "Hamburguesas",
-      "idMenu": 1
-    }
-  ]
-  ```
-
 ## Obtener producto por ID
 - **Método**: `GET`
-- **Ruta**: `/api/productos/{id}`
+- **Ruta**: `/api/productos/{producto_id}`
 - **Parámetros de ruta**:
-  - `id` (requerido): ID del producto a buscar
+  - `producto_id` (requerido): ID del producto a buscar
 - **Respuestas**:
   - 200 OK: Devuelve el producto solicitado
     ```json
@@ -70,135 +52,72 @@
       "precio": 99.99,
       "disponible": true,
       "categoria": "Hamburguesas",
-      "idMenu": 1
+      "id_menu": 1
     }
     ```
-  - 404 Not Found: Producto no encontrado
+  - 404 Not Found: Si el producto no existe
 
 ## Obtener productos por menú
 - **Método**: `GET`
-- **Ruta**: `/api/productos/menu/{idMenu}`
+- **Ruta**: `/api/productos/menu/{menu_id}`
 - **Parámetros de ruta**:
-  - `idMenu` (requerido): ID del menú
-- **Respuestas**:
-  - 200 OK: Lista de productos del menú
-    ```json
-    [
-      {
-        "id": 1,
-        "nombre": "Hamburguesa Clásica",
-        "descripcion": "Deliciosa hamburguesa con queso, lechuga y tomate",
-        "precio": 99.99,
-        "disponible": true,
-        "categoria": "Hamburguesas",
-        "idMenu": 1
-      }
-    ]
-    ```
+  - `menu_id` (requerido): ID del menú cuyos productos se quieren obtener
+- **Parámetros de consulta**:
+  - `skip` (opcional, default: 0): Número de registros a saltar
+  - `limit` (opcional, default: 100): Número máximo de registros a devolver
+  - `disponible` (opcional): Filtrar por disponibilidad (true/false)
+- **Respuesta exitosa (200 OK)**:
+  ```json
+  [
+    {
+      "id": 1,
+      "nombre": "Hamburguesa Clásica",
+      "descripcion": "Deliciosa hamburguesa con queso, lechuga y tomate",
+      "precio": 99.99,
+      "disponible": true,
+      "categoria": "Hamburguesas",
+      "id_menu": 1
+    }
+  ]
+  ```
   - 404 Not Found: Si el menú no existe
-
-## Obtener productos por categoría
-- **Método**: `GET`
-- **Ruta**: `/api/productos/categoria/{categoria}`
-- **Parámetros de ruta**:
-  - `categoria` (requerido): Nombre de la categoría
-- **Respuesta exitosa (200 OK)**:
-  ```json
-  [
-    {
-      "id": 1,
-      "nombre": "Hamburguesa Clásica",
-      "descripcion": "Deliciosa hamburguesa con queso, lechuga y tomate",
-      "precio": 99.99,
-      "disponible": true,
-      "categoria": "Hamburguesas",
-      "idMenu": 1
-    }
-  ]
-  ```
-
-## Obtener productos disponibles
-- **Método**: `GET`
-- **Ruta**: `/api/productos/disponibles`
-- **Descripción**: Obtiene un listado de productos marcados como disponibles.
-- **Respuesta exitosa (200 OK)**:
-  ```json
-  [
-    {
-      "id": 1,
-      "nombre": "Hamburguesa Clásica",
-      "descripcion": "Deliciosa hamburguesa con queso, lechuga y tomate",
-      "precio": 99.99,
-      "disponible": true,
-      "categoria": "Hamburguesas",
-      "idMenu": 1
-    }
-  ]
-  ```
 
 ## Actualizar un producto
 - **Método**: `PUT`
-- **Ruta**: `/api/productos/{id}`
+- **Ruta**: `/api/productos/{producto_id}`
 - **Parámetros de ruta**:
-  - `id` (requerido): ID del producto a actualizar
+  - `producto_id` (requerido): ID del producto a actualizar
 - **Cuerpo de la solicitud (JSON)**:
   ```json
   {
     "nombre": "Hamburguesa Clásica Especial",
-    "descripcion": "Hamburguesa con doble carne, queso, lechuga y tomate",
-    "precio": 129.99,
+    "precio": 109.99,
     "disponible": true,
-    "categoria": "Hamburguesas Especiales",
-    "idMenu": 1
+    "categoria": "Hamburguesas Premium"
   }
   ```
+  > **Nota**: Todos los campos son opcionales. Solo se actualizarán los campos proporcionados.
 - **Respuestas**:
   - 200 OK: Producto actualizado exitosamente
     ```json
     {
       "id": 1,
       "nombre": "Hamburguesa Clásica Especial",
-      "descripcion": "Hamburguesa con doble carne, queso, lechuga y tomate",
-      "precio": 129.99,
+      "descripcion": "Deliciosa hamburguesa con queso, lechuga y tomate",
+      "precio": 109.99,
       "disponible": true,
-      "categoria": "Hamburguesas Especiales",
-      "idMenu": 1
+      "categoria": "Hamburguesas Premium",
+      "id_menu": 1
     }
     ```
   - 400 Bad Request: Datos inválidos
-  - 404 Not Found: Producto o menú no encontrado
+  - 404 Not Found: Si el producto no existe
 
 ## Eliminar un producto
 - **Método**: `DELETE`
-- **Ruta**: `/api/productos/{id}`
+- **Ruta**: `/api/productos/{producto_id}`
 - **Parámetros de ruta**:
-  - `id` (requerido): ID del producto a eliminar
+  - `producto_id` (requerido): ID del producto a eliminar
 - **Respuestas**:
-  - 200 OK: Producto eliminado exitosamente
-    ```json
-    {
-      "success": true,
-      "message": "Producto eliminado exitosamente"
-    }
-    ```
-  - 404 Not Found: Producto no encontrado
-
-## Buscar productos por nombre
-- **Método**: `GET`
-- **Ruta**: `/api/productos/buscar`
-- **Parámetros de consulta**:
-  - `nombre` (requerido): Texto para buscar en el nombre del producto
-- **Respuesta exitosa (200 OK)**:
-  ```json
-  [
-    {
-      "id": 1,
-      "nombre": "Hamburguesa Clásica",
-      "descripcion": "Deliciosa hamburguesa con queso, lechuga y tomate",
-      "precio": 99.99,
-      "disponible": true,
-      "categoria": "Hamburguesas",
-      "idMenu": 1
-    }
-  ]
-  ```
+  - 204 No Content: Producto eliminado exitosamente
+  - 404 Not Found: Si el producto no existe

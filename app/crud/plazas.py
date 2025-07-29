@@ -19,7 +19,8 @@ def update_plaza(db: Session, plaza_id: int, plaza_data):
     if not db_plaza:
         return None
     
-    for key, value in plaza_data.dict().items():
+    # plaza_data ya es un diccionario, no necesitamos llamar a .dict()
+    for key, value in plaza_data.items():
         setattr(db_plaza, key, value)
     
     db.commit()
