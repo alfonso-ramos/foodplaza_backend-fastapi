@@ -19,7 +19,7 @@ API RESTful para la gestión de plazas de comida, desarrollada con FastAPI y MyS
 
 2. Crea y activa un entorno virtual:
    ```bash
-   python -m venv .venv
+   python3 -m venv .venv
    source .venv/bin/activate  # En Windows: .venv\Scripts\activate
    ```
 

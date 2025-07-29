@@ -1,6 +1,8 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Text, DECIMAL, Boolean
+from datetime import datetime
+from sqlalchemy import Column, Integer, String, ForeignKey, Text, DECIMAL, Boolean, Enum, TIMESTAMP
+from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
-from pydantic import BaseModel, Field, condecimal
+from pydantic import BaseModel, Field, condecimal, EmailStr, validator
 from typing import Optional, List
 from .db import Base
 
@@ -130,3 +132,72 @@ class Producto(ProductoBase):
     
     class Config:
         from_attributes = True
+
+# Modelo SQLAlchemy para Usuarios
+class UsuarioDB(Base):
+    __tablename__ = 'usuarios'
+    
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String(100), nullable=False)
+    email = Column(String(100), unique=True, nullable=False, index=True)
+    telefono = Column(String(20), nullable=True)
+    password = Column(String(255), nullable=False)
+    rol = Column(Enum('usuario', 'gerente', 'administrador', name='roles_usuarios'), 
+                nullable=False, default='usuario')
+    estado = Column(Enum('activo', 'inactivo', name='estados_usuarios'),
+                   nullable=False, default='activo')
+    fecha_creacion = Column(TIMESTAMP, server_default=func.now())
+    fecha_actualizacion = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
+
+# Modelos Pydantic para Usuarios
+class UsuarioBase(BaseModel):
+    nombre: str = Field(..., max_length=100)
+    email: EmailStr
+    telefono: Optional[str] = Field(None, max_length=20)
+    rol: str = "usuario"
+    
+    @validator('telefono')
+    def validate_telefono(cls, v):
+        if v is not None:
+            # Remove any non-digit characters
+            v = ''.join(filter(str.isdigit, v))
+            # Add +52 prefix if not present and length is 10
+            if len(v) == 10:
+                v = f"+52{v}"
+            elif not v.startswith('+') and len(v) > 10:
+                v = f"+{v}"
+        return v
+
+class UsuarioCreate(UsuarioBase):
+    password: str = Field(..., min_length=8)
+    
+    @validator('password')
+    def password_strength(cls, v):
+        if len(v) < 8:
+            raise ValueError('La contraseña debe tener al menos 8 caracteres')
+        if not any(c.isupper() for c in v):
+            raise ValueError('La contraseña debe contener al menos una mayúscula')
+        if not any(c.isdigit() for c in v):
+            raise ValueError('La contraseña debe contener al menos un número')
+        return v
+
+class UsuarioUpdate(BaseModel):
+    nombre: Optional[str] = Field(None, max_length=100)
+    email: Optional[EmailStr] = None
+    telefono: Optional[str] = Field(None, max_length=20)
+    rol: Optional[str] = None
+    estado: Optional[str] = None
+    password: Optional[str] = Field(None, min_length=8)
+
+class Usuario(UsuarioBase):
+    id: int
+    estado: str
+    fecha_creacion: datetime
+    fecha_actualizacion: datetime
+    
+    class Config:
+        from_attributes = True
+
+class UsuarioLogin(BaseModel):
+    email: EmailStr
+    password: str
