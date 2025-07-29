@@ -27,11 +27,14 @@ class LocaleDB(Base):
     direccion = Column(String(200), nullable=False)
     horario_apertura = Column(String(5), nullable=False)  # Formato: 'HH:MM'
     horario_cierre = Column(String(5), nullable=False)    # Formato: 'HH:MM'
+    tipo_comercio = Column(String(50), nullable=False, default='otro')  # Ej: 'restaurante', 'cafeteria', 'tienda', 'servicio', 'otro'
     estado = Column(String(20), default='activo')
     plaza_id = Column(Integer, ForeignKey('plazas.id', ondelete='CASCADE'), nullable=False)
+    id_gerente = Column(Integer, ForeignKey('usuarios.id', ondelete='SET NULL'), nullable=True)
     
-    # Relación con plaza
+    # Relaciones
     plaza = relationship("PlazaDB", back_populates="locales")
+    gerente = relationship("UsuarioDB")
 
 # Modelos Pydantic
 class PlazaBase(BaseModel):
@@ -54,8 +57,23 @@ class LocaleBase(BaseModel):
     direccion: str = Field(..., max_length=200)
     horario_apertura: str = Field(..., pattern='^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$')  # Formato HH:MM
     horario_cierre: str = Field(..., pattern='^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$')    # Formato HH:MM
+    tipo_comercio: str = Field('otro', max_length=50)  # Ej: 'restaurante', 'cafeteria', 'tienda', 'servicio', 'otro'
     estado: str = Field('activo', max_length=20)
     plaza_id: int
+    id_gerente: Optional[int] = None
+    
+    @validator('tipo_comercio')
+    def validate_tipo_comercio(cls, v):
+        tipos_validos = ['restaurante', 'cafeteria', 'tienda', 'servicio', 'otro']
+        if v.lower() not in tipos_validos:
+            raise ValueError(f"Tipo de comercio no válido. Debe ser uno de: {', '.join(tipos_validos)}")
+        return v.lower()
+    
+    @validator('id_gerente')
+    def validate_gerente(cls, v, values, **kwargs):
+        # Esta validación asume que hay acceso a la base de datos
+        # La validación real se hará en los endpoints
+        return v
 
 class LocaleCreate(LocaleBase):
     pass

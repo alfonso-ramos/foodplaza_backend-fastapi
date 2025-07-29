@@ -7,6 +7,8 @@
 - **Parámetros de consulta**:
   - `plaza_id` (opcional): Filtrar locales por ID de plaza
   - `estado` (opcional): Filtrar por estado (activo/inactivo)
+  - `tipo_comercio` (opcional): Filtrar por tipo de comercio
+  - `id_gerente` (opcional): Filtrar por ID de gerente asignado
 - **Respuesta exitosa (200 OK)**:
   ```json
   [
@@ -17,8 +19,10 @@
       "direccion": "Dirección del local",
       "horario_apertura": "09:00",
       "horario_cierre": "22:00",
+      "tipo_comercio": "restaurante",
       "estado": "activo",
-      "plaza_id": 1
+      "plaza_id": 1,
+      "id_gerente": null
     }
   ]
   ```
@@ -38,11 +42,35 @@
       "direccion": "Dirección del local",
       "horario_apertura": "09:00",
       "horario_cierre": "22:00",
+      "tipo_comercio": "restaurante",
       "estado": "activo",
-      "plaza_id": 1
+      "plaza_id": 1,
+      "id_gerente": null
     }
     ```
   - 404 Not Found: Si no se encuentra el local
+
+## Tipos de Comercio
+Los locales pueden ser de los siguientes tipos:
+- `restaurante` - Restaurantes y establecimientos de comida
+- `cafeteria` - Cafeterías y establecimientos de café
+- `tienda` - Tiendas de venta de productos
+- `servicio` - Servicios varios
+- `otro` - Otro tipo de comercio (valor por defecto)
+
+## Campos del Modelo
+
+### tipo_comercio (string, requerido)
+- Tipo de comercio del local
+- Valores permitidos: `restaurante`, `cafeteria`, `tienda`, `servicio`, `otro`
+- Valor por defecto: `otro`
+- Se convierte automáticamente a minúsculas
+
+### id_gerente (integer, opcional)
+- ID del usuario con rol 'gerente' asignado al local
+- Debe ser un ID de usuario existente con rol 'gerente'
+- Si se proporciona, el usuario debe existir y tener el rol 'gerente'
+- Puede ser nulo si el local no tiene gerente asignado
 
 ## Crear un nuevo local
 - **Método**: `POST`
@@ -55,8 +83,10 @@
     "direccion": "Dirección del local",
     "horario_apertura": "09:00",
     "horario_cierre": "22:00",
+    "tipo_comercio": "restaurante",
     "estado": "activo",
-    "plaza_id": 1
+    "plaza_id": 1,
+    "id_gerente": null
   }
   ```
 - **Respuestas**:
@@ -69,8 +99,10 @@
       "direccion": "Dirección del local",
       "horario_apertura": "09:00",
       "horario_cierre": "22:00",
+      "tipo_comercio": "restaurante",
       "estado": "activo",
-      "plaza_id": 1
+      "plaza_id": 1,
+      "id_gerente": null
     }
     ```
   - 400 Bad Request: Datos de entrada inválidos o formato de hora incorrecto (debe ser HH:MM)
@@ -89,8 +121,10 @@
     "direccion": "Nueva dirección",
     "horario_apertura": "10:00",
     "horario_cierre": "23:00",
+    "tipo_comercio": "restaurante",
     "estado": "activo",
-    "plaza_id": 2
+    "plaza_id": 2,
+    "id_gerente": 1
   }
   ```
 - **Respuestas**:
