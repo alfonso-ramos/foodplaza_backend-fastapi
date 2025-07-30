@@ -16,7 +16,7 @@
       "direccion": "Av. Principal 123",
       "estado": "activo"
     }
-  ]
+  ] 
   ```
 
 ## Obtener una Plaza

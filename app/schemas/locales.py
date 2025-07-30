@@ -1,36 +1,20 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from ..db import get_db
-from ..crud import get_locale, get_locales, create_locale, update_locale, delete_locale
-from ..models import Locale, LocaleCreate
+from pydantic import BaseModel, Field
+from typing import Optional
 
-router = APIRouter()
+class LocaleBase(BaseModel):
+    nombre: str = Field(..., max_length=100)
+    descripcion: str = Field(None, max_length=500)
+    direccion: str = Field(..., max_length=200)
+    horario_apertura: str = Field(..., pattern='^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$')  # Formato HH:MM
+    horario_cierre: str = Field(..., pattern='^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$')    # Formato HH:MM
+    estado: str = Field('activo', max_length=20)
+    plaza_id: int
 
-@router.get("/", response_model=list[Locale])
-def list_locales(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return get_locales(db, skip=skip, limit=limit)
+class LocaleCreate(LocaleBase):
+    pass
 
-@router.get("/{locale_id}", response_model=Locale)
-def read_locale(locale_id: int, db: Session = Depends(get_db)):
-    db_locale = get_locale(db, locale_id=locale_id)
-    if not db_locale:
-        raise HTTPException(status_code=404, detail="Local no encontrado")
-    return db_locale
-
-@router.post("/", response_model=Locale, status_code=status.HTTP_201_CREATED)
-def create_new_locale(locale: LocaleCreate, db: Session = Depends(get_db)):
-    return create_locale(db=db, locale=locale)
-
-@router.put("/{locale_id}", response_model=Locale)
-def update_existing_locale(locale_id: int, locale: LocaleCreate, db: Session = Depends(get_db)):
-    db_locale = update_locale(db, locale_id=locale_id, locale_data=locale)
-    if not db_locale:
-        raise HTTPException(status_code=404, detail="Local no encontrado")
-    return db_locale
-
-@router.delete("/{locale_id}", status_code=status.HTTP_204_NO_CONTENT)
-def remove_locale(locale_id: int, db: Session = Depends(get_db)):
-    success = delete_locale(db, locale_id=locale_id)
-    if not success:
-        raise HTTPException(status_code=404, detail="Local no encontrado")
-    return None
+class Locale(LocaleBase):
+    id: int
+    
+    class Config:
+        from_attributes = True  # Replaces orm_mode in Pydantic v2
