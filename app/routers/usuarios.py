@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
+import os
 
 from .. import models, schemas
 from ..db import get_db
 from ..crud import usuarios as crud_usuarios
+from ..services.cloudinary_service import upload_image, delete_image
 
 router = APIRouter()
 
@@ -60,6 +62,62 @@ def eliminar_usuario(usuario_id: int, db: Session = Depends(get_db)):
     if not crud_usuarios.delete_usuario(db, usuario_id=usuario_id):
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return None
+
+@router.post("/{usuario_id}/imagen", response_model=schemas.ImagenResponse)
+async def subir_imagen_perfil(
+    usuario_id: int,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+    """
+    Sube una imagen de perfil para el usuario especificado.
+    
+    - **usuario_id**: ID del usuario
+    - **file**: Archivo de imagen a subir (jpg, jpeg, png, webp)
+    """
+    # Verificar que el usuario existe
+    db_usuario = crud_usuarios.get_usuario(db, usuario_id=usuario_id)
+    if not db_usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    
+    # Verificar tipo de archivo
+    allowed_types = ["image/jpeg", "image/png", "image/webp"]
+    if file.content_type not in allowed_types:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Tipo de archivo no permitido. Tipos permitidos: {', '.join(allowed_types)}"
+        )
+    
+    try:
+        # Leer el contenido del archivo
+        file_content = await file.read()
+        
+        # Subir a Cloudinary
+        upload_result = upload_image(
+            file_content,
+            folder="usuarios",
+            public_id=f"user_{usuario_id}"
+        )
+        
+        # Actualizar usuario con la nueva imagen
+        if db_usuario.imagen_public_id:
+            delete_image(db_usuario.imagen_public_id)
+        
+        db_usuario.imagen_url = upload_result["url"]
+        db_usuario.imagen_public_id = upload_result["public_id"]
+        db.commit()
+        db.refresh(db_usuario)
+        
+        return {
+            "url": upload_result["url"],
+            "public_id": upload_result["public_id"]
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error al subir la imagen: {str(e)}"
+        )
 
 @router.post("/login", response_model=dict)
 async def login(credenciales: models.UsuarioLogin, db: Session = Depends(get_db)):

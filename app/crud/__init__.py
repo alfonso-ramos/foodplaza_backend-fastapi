@@ -14,3 +14,11 @@ from .locales import (
     update_locale,
     delete_locale
 )
+
+from .productos import (
+    get_producto,
+    get_productos_by_menu,
+    create_producto,
+    update_producto,
+    delete_producto
+)

@@ -34,6 +34,47 @@
     ```
   - 400 Bad Request: Datos inválidos o email ya registrado
 
+## Subir imagen de perfil
+
+- **Método**: `POST`
+- **Ruta**: `/api/usuarios/{usuario_id}/imagen`
+- **Descripción**: Sube o actualiza la imagen de perfil de un usuario.
+- **Parámetros de ruta**:
+  - `usuario_id` (obligatorio): ID del usuario
+- **Cuerpo de la solicitud (form-data)**:
+  - `file` (obligatorio): Archivo de imagen (jpg, jpeg, png, webp)
+- **Validaciones**:
+  - Tamaño máximo: 5MB
+  - Formatos permitidos: jpg, jpeg, png, webp
+- **Respuestas**:
+  - 200 OK: Imagen subida exitosamente
+    ```json
+    {
+      "url": "https://res.cloudinary.com/...",
+      "public_id": "foodplaza/usuarios/user_1",
+      "mensaje": "Imagen subida exitosamente"
+    }
+    ```
+  - 400 Bad Request: Tipo de archivo no permitido o archivo inválido
+  - 404 Not Found: Usuario no encontrado
+  - 500 Internal Server Error: Error al procesar la imagen
+
+## Eliminar imagen de perfil
+
+- **Método**: `DELETE`
+- **Ruta**: `/api/usuarios/{usuario_id}/imagen`
+- **Descripción**: Elimina la imagen de perfil de un usuario.
+- **Parámetros de ruta**:
+  - `usuario_id` (obligatorio): ID del usuario
+- **Respuestas**:
+  - 200 OK: Imagen eliminada exitosamente
+    ```json
+    {
+      "mensaje": "Imagen eliminada exitosamente"
+    }
+    ```
+  - 404 Not Found: Usuario no encontrado o no tiene imagen
+
 ## Iniciar sesión
 - **Método**: `POST`
 - **Ruta**: `/api/usuarios/login`

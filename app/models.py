@@ -14,6 +14,8 @@ class PlazaDB(Base):
     nombre = Column(String(100), nullable=False)
     direccion = Column(String(200), nullable=False)
     estado = Column(String(20), default='activo')
+    imagen_url = Column(String(500), nullable=True)
+    imagen_public_id = Column(String(500), nullable=True)
     
     # Relación con locales
     locales = relationship("LocaleDB", back_populates="plaza", cascade="all, delete-orphan")
@@ -29,6 +31,8 @@ class LocaleDB(Base):
     horario_cierre = Column(String(5), nullable=False)    # Formato: 'HH:MM'
     tipo_comercio = Column(String(50), nullable=False, default='otro')  # Ej: 'restaurante', 'cafeteria', 'tienda', 'servicio', 'otro'
     estado = Column(String(20), default='activo')
+    imagen_url = Column(String(500), nullable=True)
+    imagen_public_id = Column(String(500), nullable=True)
     plaza_id = Column(Integer, ForeignKey('plazas.id', ondelete='CASCADE'), nullable=False)
     id_gerente = Column(Integer, ForeignKey('usuarios.id', ondelete='SET NULL'), nullable=True)
     
@@ -106,6 +110,8 @@ class ProductoDB(Base):
     id_menu = Column(Integer, ForeignKey('menus.id', ondelete='CASCADE'), nullable=False)
     disponible = Column(Boolean, nullable=False, default=True)
     categoria = Column(String(50), nullable=True)
+    imagen_url = Column(String(500), nullable=True)
+    imagen_public_id = Column(String(500), nullable=True)
     
     # Relación con menú
     menu = relationship("MenuDB", back_populates="productos")
@@ -160,6 +166,8 @@ class UsuarioDB(Base):
     email = Column(String(100), unique=True, nullable=False, index=True)
     telefono = Column(String(20), nullable=True)
     password = Column(String(255), nullable=False)
+    imagen_url = Column(String(500), nullable=True)
+    imagen_public_id = Column(String(500), nullable=True)
     rol = Column(Enum('usuario', 'gerente', 'administrador', name='roles_usuarios'), 
                 nullable=False, default='usuario')
     estado = Column(Enum('activo', 'inactivo', name='estados_usuarios'),
@@ -173,6 +181,8 @@ class UsuarioBase(BaseModel):
     email: EmailStr
     telefono: Optional[str] = Field(None, max_length=20)
     rol: str = "usuario"
+    imagen_url: Optional[str] = None
+    imagen_public_id: Optional[str] = None
     
     @validator('telefono')
     def validate_telefono(cls, v):

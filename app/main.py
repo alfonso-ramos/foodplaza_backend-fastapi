@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import router
+from app.routers.plazas_imagenes import router as plazas_imagenes_router
+from app.routers.locales_imagenes import router as locales_imagenes_router
+from app.routers.productos_imagenes import router as productos_imagenes_router
 from app.db import create_tables
 
 app = FastAPI()
@@ -15,6 +18,9 @@ app.add_middleware(
 
 # Incluir rutas
 app.include_router(router, prefix="/api")
+app.include_router(plazas_imagenes_router)
+app.include_router(locales_imagenes_router)
+app.include_router(productos_imagenes_router)
 
 # Crear tablas al iniciar
 @app.on_event("startup")
