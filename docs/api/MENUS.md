@@ -1,100 +1,76 @@
-# Menús
+# Menus
 
-## Crear un nuevo menú
-- **Método**: `POST`
-- **Ruta**: `/api/menus`
-- **Descripción**: Crea un nuevo menú en el sistema.
-- **Cuerpo de la solicitud (JSON)**:
-  ```json
-  {
-    "id_local": 1,
-    "nombre_menu": "Menú de Prueba",
-    "descripcion": "Descripción del menú de prueba"
-  }
-  ```
-- **Respuestas**:
-  - 201 Created: Menú creado exitosamente
-    ```json
-    {
-      "id": 1,
-      "id_local": 1,
-      "nombre_menu": "Menú de Prueba",
-      "descripcion": "Descripción del menú de prueba"
-    }
-    ```
-  - 400 Bad Request: Datos inválidos o faltantes
-  - 404 Not Found: Si el local no existe
+This document describes the endpoints for managing menus.
 
-## Obtener menú por ID
-- **Método**: `GET`
-- **Ruta**: `/api/menus/{menu_id}`
-- **Parámetros de ruta**:
-  - `menu_id` (requerido): ID del menú a buscar
-- **Respuestas**:
-  - 200 OK: Devuelve el menú solicitado
-    ```json
-    {
-      "id": 1,
-      "id_local": 1,
-      "nombre_menu": "Menú de Prueba",
-      "descripcion": "Descripción del menú de prueba"
-    }
-    ```
-  - 404 Not Found: Si el menú no existe
+## Get all menus for a locale
 
-## Obtener menús por local
-- **Método**: `GET`
-- **Ruta**: `/api/menus/local/{local_id}`
-- **Parámetros de ruta**:
-  - `local_id` (requerido): ID del local cuyos menús se quieren obtener
-- **Parámetros de consulta**:
-  - `skip` (opcional, default: 0): Número de registros a saltar
-  - `limit` (opcional, default: 100): Número máximo de registros a devolver
-- **Respuesta exitosa (200 OK)**:
-  ```json
-  [
-    {
-      "id": 1,
-      "id_local": 1,
-      "nombre_menu": "Menú de Prueba",
-      "descripcion": "Descripción del menú de prueba"
-    }
-  ]
-  ```
-  - 404 Not Found: Si el local no existe
+- **Method**: `GET`
+- **Path**: `/api/v1/menus/local/{local_id}`
+- **Description**: Gets a list of all menus for a specific locale.
 
-## Actualizar un menú
-- **Método**: `PUT`
-- **Ruta**: `/api/menus/{menu_id}`
-- **Parámetros de ruta**:
-  - `menu_id` (requerido): ID del menú a actualizar
-- **Cuerpo de la solicitud (JSON)**:
-  ```json
-  {
-    "id_local": 1,
-    "nombre_menu": "Menú Actualizado",
-    "descripcion": "Nueva descripción"
-  }
-  ```
-  > **Nota**: Todos los campos son opcionales. Solo se actualizarán los campos proporcionados.
-- **Respuestas**:
-  - 200 OK: Menú actualizado exitosamente
-    ```json
-    {
-      "id": 1,
-      "id_local": 1,
-      "nombre_menu": "Menú Actualizado",
-      "descripcion": "Nueva descripción"
-    }
-    ```
-  - 400 Bad Request: Datos inválidos
-  - 404 Not Found: Si el menú no existe
+### Responses
 
-## Eliminar un menú
-- **Método**: `DELETE`
-- **Ruta**: `/api/menus/{menu_id}`
-- **Parámetros de ruta**:
-  - `menu_id` (requerido): ID del menú a eliminar
-- **Respuestas**:
-  - 204 No Content: Menú eliminado exitosamente
-  - 404 Not Found: Si el menú no existe
+- **200 OK**: Returns a list of menus.
+
+## Get a menu by ID
+
+- **Method**: `GET`
+- **Path**: `/api/v1/menus/{menu_id}`
+- **Description**: Gets a single menu by its ID.
+
+### Responses
+
+- **200 OK**: Returns the menu's data.
+- **404 Not Found**: If the menu is not found.
+
+## Create a new menu
+
+- **Method**: `POST`
+- **Path**: `/api/v1/menus/`
+- **Description**: Creates a new menu.
+
+### Request Body
+
+```json
+{
+  "nombre_menu": "string",
+  "descripcion": "string",
+  "id_local": 0
+}
+```
+
+### Responses
+
+- **201 Created**: If the menu is created successfully.
+
+## Update a menu
+
+- **Method**: `PUT`
+- **Path**: `/api/v1/menus/{menu_id}`
+- **Description**: Updates an existing menu's data.
+
+### Request Body
+
+```json
+{
+  "nombre_menu": "string",
+  "descripcion": "string",
+  "id_local": 0
+}
+```
+
+### Responses
+
+- **200 OK**: Returns the updated menu's data.
+- **404 Not Found**: If the menu is not found.
+
+## Delete a menu
+
+- **Method**: `DELETE`
+- **Path**: `/api/v1/menus/{menu_id}`
+- **Description**: Deletes a menu by its ID.
+
+### Responses
+
+- **204 No Content**: If the menu is deleted successfully.
+- **404 Not Found**: If the menu is not found.

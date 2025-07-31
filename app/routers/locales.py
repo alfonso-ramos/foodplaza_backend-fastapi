@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from ..db import get_db
-from ..crud import get_locale, get_locales, create_locale, update_locale, delete_locale
-from ..models import Locale, LocaleCreate
+from app.db import get_db
+from app.crud import locales as crud_locales
+from ..models.locales import LocalDB
+from ..schemas.locales import Locale, LocaleCreate
 
-router = APIRouter()
+router = APIRouter(prefix="", tags=["locales"])
 
 @router.get("/", response_model=list[Locale])
 def list_locales(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
@@ -30,7 +31,7 @@ def update_existing_locale(locale_id: int, locale: LocaleCreate, db: Session = D
 
 @router.delete("/{locale_id}", status_code=status.HTTP_204_NO_CONTENT)
 def remove_locale(locale_id: int, db: Session = Depends(get_db)):
-    success = delete_locale(db, locale_id=locale_id)
+    success = crud_locales.delete_locale(db, locale_id=locale_id)
     if not success:
         raise HTTPException(status_code=404, detail="Local no encontrado")
     return None

@@ -1,109 +1,76 @@
-# API de Plazas
+# Plazas
 
-## Listar Plazas
-- **Método**: `GET`
-- **Ruta**: `/api/plazas`
-- **Parámetros de consulta**:
-  - `skip` (opcional, default: 0): Número de registros a saltar
-  - `limit` (opcional, default: 100): Número máximo de registros a devolver
-- **Descripción**: Obtiene un listado paginado de todas las plazas registradas.
-- **Respuesta exitosa (200 OK)**:
-  ```json
-  [
-    {
-      "id": 1,
-      "nombre": "Plaza Central",
-      "direccion": "Av. Principal 123",
-      "estado": "activo"
-    }
-  ] 
-  ```
+This document describes the endpoints for managing plazas.
 
-## Obtener una Plaza
-- **Método**: `GET`
-- **Ruta**: `/api/plazas/{plaza_id}`
-- **Parámetros de ruta**:
-  - `plaza_id` (requerido): ID de la plaza a consultar
-- **Descripción**: Obtiene los detalles de una plaza específica.
-- **Respuesta exitosa (200 OK)**:
-  ```json
-  {
-    "id": 1,
-    "nombre": "Plaza Central",
-    "direccion": "Av. Principal 123",
-    "estado": "activo"
-  }
-  ```
-- **Error (404 Not Found)**:
-  ```json
-  {
-    "detail": "Plaza no encontrada"
-  }
-  ```
+## Get all plazas
 
-## Crear una Plaza
-- **Método**: `POST`
-- **Ruta**: `/api/plazas`
-- **Cuerpo de la solicitud (JSON)**:
-  ```json
-  {
-    "nombre": "Nueva Plaza",
-    "direccion": "Calle Nueva 456",
-    "estado": "activo"
-  }
-  ```
-- **Campos requeridos**:
-  - `nombre` (string): Nombre de la plaza
-  - `direccion` (string): Dirección de la plaza
-  - `estado` (string, opcional): Estado de la plaza (default: "activo")
-- **Respuesta exitosa (201 Created)**:
-  ```json
-  {
-    "id": 2,
-    "nombre": "Nueva Plaza",
-    "direccion": "Calle Nueva 456",
-    "estado": "activo"
-  }
-  ```
+- **Method**: `GET`
+- **Path**: `/api/v1/plazas/`
+- **Description**: Gets a list of all plazas.
 
-## Actualizar una Plaza
-- **Método**: `PUT`
-- **Ruta**: `/api/plazas/{plaza_id}`
-- **Parámetros de ruta**:
-  - `plaza_id` (requerido): ID de la plaza a actualizar
-- **Cuerpo de la solicitud (JSON)**:
-  ```json
-  {
-    "nombre": "Plaza Actualizada",
-    "direccion": "Calle Actualizada 789",
-    "estado": "inactivo"
-  }
-  ```
-- **Respuesta exitosa (200 OK)**:
-  ```json
-  {
-    "id": 1,
-    "nombre": "Plaza Actualizada",
-    "direccion": "Calle Actualizada 789",
-    "estado": "inactivo"
-  }
-  ```
-- **Error (404 Not Found)**:
-  ```json
-  {
-    "detail": "Plaza no encontrada"
-  }
-  ```
+### Responses
 
-## Eliminar una Plaza
-- **Método**: `DELETE`
-- **Ruta**: `/api/plazas/{plaza_id}`
-- **Parámetros de ruta**:
-  - `plaza_id` (requerido): ID de la plaza a eliminar
-- **Respuesta exitosa (204 No Content)**: Sin contenido
-- **Error (404 Not Found)**:
-  ```json
-  {
-    "detail": "Plaza no encontrada"
-  }
-  ```
+- **200 OK**: Returns a list of plazas.
+
+## Get a plaza by ID
+
+- **Method**: `GET`
+- **Path**: `/api/v1/plazas/{plaza_id}`
+- **Description**: Gets a single plaza by its ID.
+
+### Responses
+
+- **200 OK**: Returns the plaza's data.
+- **404 Not Found**: If the plaza is not found.
+
+## Create a new plaza
+
+- **Method**: `POST`
+- **Path**: `/api/v1/plazas/`
+- **Description**: Creates a new plaza.
+
+### Request Body
+
+```json
+{
+  "nombre": "string",
+  "direccion": "string",
+  "estado": "activo"
+}
+```
+
+### Responses
+
+- **201 Created**: If the plaza is created successfully.
+
+## Update a plaza
+
+- **Method**: `PUT`
+- **Path**: `/api/v1/plazas/{plaza_id}`
+- **Description**: Updates an existing plaza's data.
+
+### Request Body
+
+```json
+{
+  "nombre": "string",
+  "direccion": "string",
+  "estado": "activo"
+}
+```
+
+### Responses
+
+- **200 OK**: Returns the updated plaza's data.
+- **404 Not Found**: If the plaza is not found.
+
+## Delete a plaza
+
+- **Method**: `DELETE`
+- **Path**: `/api/v1/plazas/{plaza_id}`
+- **Description**: Deletes a plaza by its ID.
+
+### Responses
+
+- **204 No Content**: If the plaza is deleted successfully.
+- **404 Not Found**: If the plaza is not found.

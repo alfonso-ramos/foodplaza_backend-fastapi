@@ -1,123 +1,82 @@
-# Productos
+# Products
 
-## Crear un nuevo producto
-- **Método**: `POST`
-- **Ruta**: `/api/productos`
-- **Descripción**: Crea un nuevo producto en el sistema.
-- **Cuerpo de la solicitud (JSON)**:
-  ```json
-  {
-    "nombre": "Hamburguesa Clásica",
-    "descripcion": "Deliciosa hamburguesa con queso, lechuga y tomate",
-    "precio": 99.99,
-    "disponible": true,
-    "categoria": "Hamburguesas",
-    "id_menu": 1
-  }
-  ```
-- **Validaciones**:
-  - nombre: obligatorio, máximo 100 caracteres
-  - precio: obligatorio, debe ser mayor a 0
-  - disponible: opcional, por defecto true
-  - id_menu: obligatorio, debe existir el menú
-  - categoria: opcional, máximo 50 caracteres
-- **Respuestas**:
-  - 201 Created: Producto creado exitosamente
-    ```json
-    {
-      "id": 1,
-      "nombre": "Hamburguesa Clásica",
-      "descripcion": "Deliciosa hamburguesa con queso, lechuga y tomate",
-      "precio": 99.99,
-      "disponible": true,
-      "categoria": "Hamburguesas",
-      "id_menu": 1
-    }
-    ```
-  - 400 Bad Request: Datos inválidos o faltantes
-  - 404 Not Found: Si el menú no existe
+This document describes the endpoints for managing products.
 
-## Obtener producto por ID
-- **Método**: `GET`
-- **Ruta**: `/api/productos/{producto_id}`
-- **Parámetros de ruta**:
-  - `producto_id` (requerido): ID del producto a buscar
-- **Respuestas**:
-  - 200 OK: Devuelve el producto solicitado
-    ```json
-    {
-      "id": 1,
-      "nombre": "Hamburguesa Clásica",
-      "descripcion": "Deliciosa hamburguesa con queso, lechuga y tomate",
-      "precio": 99.99,
-      "disponible": true,
-      "categoria": "Hamburguesas",
-      "id_menu": 1
-    }
-    ```
-  - 404 Not Found: Si el producto no existe
+## Get all products for a menu
 
-## Obtener productos por menú
-- **Método**: `GET`
-- **Ruta**: `/api/productos/menu/{menu_id}`
-- **Parámetros de ruta**:
-  - `menu_id` (requerido): ID del menú cuyos productos se quieren obtener
-- **Parámetros de consulta**:
-  - `skip` (opcional, default: 0): Número de registros a saltar
-  - `limit` (opcional, default: 100): Número máximo de registros a devolver
-  - `disponible` (opcional): Filtrar por disponibilidad (true/false)
-- **Respuesta exitosa (200 OK)**:
-  ```json
-  [
-    {
-      "id": 1,
-      "nombre": "Hamburguesa Clásica",
-      "descripcion": "Deliciosa hamburguesa con queso, lechuga y tomate",
-      "precio": 99.99,
-      "disponible": true,
-      "categoria": "Hamburguesas",
-      "id_menu": 1
-    }
-  ]
-  ```
-  - 404 Not Found: Si el menú no existe
+- **Method**: `GET`
+- **Path**: `/api/v1/productos/menu/{menu_id}`
+- **Description**: Gets a list of all products for a specific menu.
 
-## Actualizar un producto
-- **Método**: `PUT`
-- **Ruta**: `/api/productos/{producto_id}`
-- **Parámetros de ruta**:
-  - `producto_id` (requerido): ID del producto a actualizar
-- **Cuerpo de la solicitud (JSON)**:
-  ```json
-  {
-    "nombre": "Hamburguesa Clásica Especial",
-    "precio": 109.99,
-    "disponible": true,
-    "categoria": "Hamburguesas Premium"
-  }
-  ```
-  > **Nota**: Todos los campos son opcionales. Solo se actualizarán los campos proporcionados.
-- **Respuestas**:
-  - 200 OK: Producto actualizado exitosamente
-    ```json
-    {
-      "id": 1,
-      "nombre": "Hamburguesa Clásica Especial",
-      "descripcion": "Deliciosa hamburguesa con queso, lechuga y tomate",
-      "precio": 109.99,
-      "disponible": true,
-      "categoria": "Hamburguesas Premium",
-      "id_menu": 1
-    }
-    ```
-  - 400 Bad Request: Datos inválidos
-  - 404 Not Found: Si el producto no existe
+### Responses
 
-## Eliminar un producto
-- **Método**: `DELETE`
-- **Ruta**: `/api/productos/{producto_id}`
-- **Parámetros de ruta**:
-  - `producto_id` (requerido): ID del producto a eliminar
-- **Respuestas**:
-  - 204 No Content: Producto eliminado exitosamente
-  - 404 Not Found: Si el producto no existe
+- **200 OK**: Returns a list of products.
+
+## Get a product by ID
+
+- **Method**: `GET`
+- **Path**: `/api/v1/productos/{producto_id}`
+- **Description**: Gets a single product by its ID.
+
+### Responses
+
+- **200 OK**: Returns the product's data.
+- **404 Not Found**: If the product is not found.
+
+## Create a new product
+
+- **Method**: `POST`
+- **Path**: `/api/v1/productos/`
+- **Description**: Creates a new product.
+
+### Request Body
+
+```json
+{
+  "nombre": "string",
+  "descripcion": "string",
+  "precio": 0,
+  "disponible": true,
+  "categoria": "string",
+  "id_menu": 0
+}
+```
+
+### Responses
+
+- **201 Created**: If the product is created successfully.
+
+## Update a product
+
+- **Method**: `PUT`
+- **Path**: `/api/v1/productos/{producto_id}`
+- **Description**: Updates an existing product's data.
+
+### Request Body
+
+```json
+{
+  "nombre": "string",
+  "descripcion": "string",
+  "precio": 0,
+  "disponible": true,
+  "categoria": "string",
+  "id_menu": 0
+}
+```
+
+### Responses
+
+- **200 OK**: Returns the updated product's data.
+- **404 Not Found**: If the product is not found.
+
+## Delete a product
+
+- **Method**: `DELETE`
+- **Path**: `/api/v1/productos/{producto_id}`
+- **Description**: Deletes a product by its ID.
+
+### Responses
+
+- **204 No Content**: If the product is deleted successfully.
+- **404 Not Found**: If the product is not found.

@@ -1,85 +1,41 @@
+
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
-
-from .. import models, schemas
-from ..db import get_db
-from ..crud import usuarios as crud_usuarios
+from app.db import get_db
+from app.schemas.usuarios import Usuario, UsuarioCreate, UsuarioUpdate
+from app.crud import usuarios as crud_usuarios
 
 router = APIRouter()
 
-@router.post("/", response_model=models.Usuario, status_code=status.HTTP_201_CREATED)
-def crear_usuario(usuario: models.UsuarioCreate, db: Session = Depends(get_db)):
-    """Crea un nuevo usuario"""
-    db_usuario = crud_usuarios.get_usuario_by_email(db, email=usuario.email)
-    if db_usuario:
-        raise HTTPException(
-            status_code=400,
-            detail="El correo electrónico ya está registrado"
-        )
-    return crud_usuarios.create_usuario(db=db, usuario_data=usuario)
+@router.post("/", response_model=Usuario, status_code=status.HTTP_201_CREATED, summary="Create a new user", description="Create a new user with the provided data.")
+def create_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
+    db_user = crud_usuarios.get_usuario_by_email(db, email=usuario.email)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    return crud_usuarios.create_usuario(db=db, usuario=usuario)
 
-@router.get("/", response_model=List[models.Usuario])
-def leer_usuarios(
-    skip: int = 0, 
-    limit: int = 100,
-    estado: str = None,
-    db: Session = Depends(get_db)
-):
-    """Obtiene la lista de usuarios con paginación"""
-    if estado and estado not in ["activo", "inactivo"]:
-        raise HTTPException(
-            status_code=400,
-            detail="El estado debe ser 'activo' o 'inactivo'"
-        )
-    return crud_usuarios.get_usuarios(db, skip=skip, limit=limit, estado=estado)
+@router.get("/", response_model=List[Usuario], summary="Get all users", description="Get a list of all users.")
+def read_usuarios(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    users = crud_usuarios.get_usuarios(db, skip=skip, limit=limit)
+    return users
 
-@router.get("/{usuario_id}", response_model=models.Usuario)
-def leer_usuario(usuario_id: int, db: Session = Depends(get_db)):
-    """Obtiene un usuario por su ID"""
-    db_usuario = crud_usuarios.get_usuario(db, usuario_id=usuario_id)
-    if db_usuario is None:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    return db_usuario
+@router.get("/{usuario_id}", response_model=Usuario, summary="Get a user by ID", description="Get a single user by their ID.")
+def read_usuario(usuario_id: int, db: Session = Depends(get_db)):
+    db_user = crud_usuarios.get_usuario(db, usuario_id=usuario_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user
 
-@router.put("/{usuario_id}", response_model=models.Usuario)
-def actualizar_usuario(
-    usuario_id: int, 
-    usuario: models.UsuarioUpdate, 
-    db: Session = Depends(get_db)
-):
-    """Actualiza un usuario existente"""
-    db_usuario = crud_usuarios.update_usuario(db, usuario_id=usuario_id, usuario_data=usuario)
-    if db_usuario is None:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    return db_usuario
+@router.put("/{usuario_id}", response_model=Usuario, summary="Update a user", description="Update an existing user's data.")
+def update_usuario(usuario_id: int, usuario: UsuarioUpdate, db: Session = Depends(get_db)):
+    db_user = crud_usuarios.update_usuario(db, usuario_id=usuario_id, usuario=usuario)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user
 
-@router.delete("/{usuario_id}", status_code=status.HTTP_204_NO_CONTENT)
-def eliminar_usuario(usuario_id: int, db: Session = Depends(get_db)):
-    """Elimina un usuario (cambia su estado a inactivo)"""
+@router.delete("/{usuario_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Delete a user", description="Delete a user by their ID.")
+def delete_usuario(usuario_id: int, db: Session = Depends(get_db)):
     if not crud_usuarios.delete_usuario(db, usuario_id=usuario_id):
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    return None
-
-@router.post("/login")
-def login(credenciales: models.UsuarioLogin, db: Session = Depends(get_db)):
-    """Inicia sesión con email y contraseña"""
-    usuario = crud_usuarios.authenticate_user(
-        db, 
-        email=credenciales.email, 
-        password=credenciales.password
-    )
-    if not usuario:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Credenciales incorrectas",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    # En una implementación futura, aquí se generaría un token JWT
-    return {
-        "mensaje": "Inicio de sesión exitoso",
-        "usuario_id": usuario.id,
-        "nombre": usuario.nombre,
-        "rol": usuario.rol
-    }
+        raise HTTPException(status_code=404, detail="User not found")
+    return

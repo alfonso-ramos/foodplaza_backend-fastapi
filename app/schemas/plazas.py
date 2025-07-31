@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field
+from pydantic import ConfigDict, Field
+from pydantic import BaseModel
 from typing import Optional
 
 class PlazaBase(BaseModel):
@@ -12,5 +13,18 @@ class PlazaCreate(PlazaBase):
 class Plaza(PlazaBase):
     id: int
     
-    class Config:
-        from_attributes = True  # Replaces orm_mode in Pydantic v2
+    model_config = ConfigDict(
+        from_attributes=True  # Replaces orm_mode in Pydantic v2
+    )
+
+class PlazaUpdate(BaseModel):
+    """
+    Esquema para actualizar una plaza. Todos los campos son opcionales.
+    """
+    nombre: Optional[str] = Field(None, max_length=100)
+    direccion: Optional[str] = Field(None, max_length=200)
+    estado: Optional[str] = Field(None, max_length=20)
+    
+    model_config = ConfigDict(
+        from_attributes=True
+    )

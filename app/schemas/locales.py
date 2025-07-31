@@ -1,5 +1,6 @@
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import ConfigDict, Field, field_validator
+from pydantic import BaseModel
+from typing import Optional, Any
 
 class LocaleBase(BaseModel):
     nombre: str = Field(..., max_length=100)
@@ -16,5 +17,7 @@ class LocaleCreate(LocaleBase):
 class Locale(LocaleBase):
     id: int
     
-    class Config:
-        from_attributes = True  # Replaces orm_mode in Pydantic v2
+    model_config = ConfigDict(
+        from_attributes=True,  # Replaces orm_mode in Pydantic v2
+        extra='ignore'
+    )

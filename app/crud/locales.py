@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
-from ..models import LocaleDB, UsuarioDB
+from ..models import LocalDB, UsuarioDB
 
 def get_locale(db: Session, locale_id: int):
-    return db.query(LocaleDB).filter(LocaleDB.id == locale_id).first()
+    return db.query(LocalDB).filter(LocalDB.id == locale_id).first()
 
 def get_locales(
     db: Session, 
@@ -13,15 +13,16 @@ def get_locales(
     tipo_comercio: str = None,
     id_gerente: int = None
 ):
-    query = db.query(LocaleDB)
+    query = db.query(LocalDB)
     
     # Aplicar filtros si se proporcionan
     if plaza_id is not None:
-        query = query.filter(LocaleDB.plaza_id == plaza_id)
+        query = query.filter(LocalDB.plaza_id == plaza_id)
     if tipo_comercio is not None:
-        query = query.filter(LocaleDB.tipo_comercio == tipo_comercio.lower())
+        query = query.filter(LocalDB.tipo_comercio == tipo_comercio.lower())
     if id_gerente is not None:
-        query = query.filter(LocaleDB.id_gerente == id_gerente)
+        query = query.join(UsuarioDB, LocalDB.id_gerente == UsuarioDB.id)
+        query = query.filter(UsuarioDB.id == id_gerente)
     
     return query.offset(skip).limit(limit).all()
 
@@ -41,7 +42,7 @@ def create_locale(db: Session, locale):
     if 'tipo_comercio' in locale_data and locale_data['tipo_comercio']:
         locale_data['tipo_comercio'] = locale_data['tipo_comercio'].lower()
     
-    db_locale = LocaleDB(**locale_data)
+    db_locale = LocalDB(**locale_data)
     db.add(db_locale)
     db.commit()
     db.refresh(db_locale)
