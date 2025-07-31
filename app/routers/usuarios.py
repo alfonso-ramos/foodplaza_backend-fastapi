@@ -61,25 +61,34 @@ def eliminar_usuario(usuario_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return None
 
-@router.post("/login")
-def login(credenciales: models.UsuarioLogin, db: Session = Depends(get_db)):
+@router.post("/login", response_model=dict)
+async def login(credenciales: models.UsuarioLogin, db: Session = Depends(get_db)):
     """Inicia sesión con email y contraseña"""
-    usuario = crud_usuarios.authenticate_user(
-        db, 
-        email=credenciales.email, 
-        password=credenciales.password
-    )
-    if not usuario:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Credenciales incorrectas",
-            headers={"WWW-Authenticate": "Bearer"},
+    try:
+        usuario = crud_usuarios.authenticate_user(
+            db, 
+            email=credenciales.email, 
+            password=credenciales.password
         )
-    
-    # En una implementación futura, aquí se generaría un token JWT
-    return {
-        "mensaje": "Inicio de sesión exitoso",
-        "usuario_id": usuario.id,
-        "nombre": usuario.nombre,
-        "rol": usuario.rol
-    }
+        if not usuario:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Credenciales incorrectas"
+            )
+        
+        # Respuesta simple sin JWT
+        return {
+            "mensaje": "Inicio de sesión exitoso",
+            "usuario": {
+                "id": usuario.id,
+                "nombre": usuario.nombre,
+                "email": usuario.email,
+                "rol": usuario.rol,
+                "estado": usuario.estado
+            }
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error en el servidor: {str(e)}"
+        )
