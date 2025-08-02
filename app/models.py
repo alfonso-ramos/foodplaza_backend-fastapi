@@ -45,6 +45,8 @@ class PlazaBase(BaseModel):
     nombre: str = Field(..., max_length=100)
     direccion: str = Field(..., max_length=200)
     estado: str = Field('activo', max_length=20)
+    imagen_url: Optional[str] = None
+    imagen_public_id: Optional[str] = None
 
 class PlazaCreate(PlazaBase):
     pass
@@ -63,6 +65,8 @@ class LocaleBase(BaseModel):
     horario_cierre: str = Field(..., pattern='^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$')    # Formato HH:MM
     tipo_comercio: str = Field('otro', max_length=50)  # Ej: 'restaurante', 'cafeteria', 'tienda', 'servicio', 'otro'
     estado: str = Field('activo', max_length=20)
+    imagen_url: Optional[str] = None
+    imagen_public_id: Optional[str] = None
     plaza_id: int
     id_gerente: Optional[int] = None
     
@@ -139,6 +143,8 @@ class ProductoBase(BaseModel):
     disponible: bool = True
     categoria: Optional[str] = Field(None, max_length=50)
     id_menu: int
+    imagen_url: Optional[str] = None
+    imagen_public_id: Optional[str] = None
 
 class ProductoCreate(ProductoBase):
     pass
@@ -150,6 +156,8 @@ class ProductoUpdate(BaseModel):
     disponible: Optional[bool] = None
     categoria: Optional[str] = Field(None, max_length=50)
     id_menu: Optional[int] = None
+    imagen_url: Optional[str] = None
+    imagen_public_id: Optional[str] = None
 
 class Producto(ProductoBase):
     id: int

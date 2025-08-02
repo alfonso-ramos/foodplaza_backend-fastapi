@@ -140,3 +140,40 @@ Los locales pueden ser de los siguientes tipos:
 - **Respuestas**:
   - 204 No Content: Local eliminado correctamente
   - 404 Not Found: Si no se encuentra el local
+
+## Subir imagen de un Local
+- **Método**: `POST`
+- **Ruta**: `/api/locales/{local_id}/imagen`
+- **Parámetros de ruta**:
+  - `local_id` (requerido): ID del local al que se le asignará la imagen
+- **Cuerpo de la solicitud (form-data)**:
+  - `file` (requerido): Archivo de imagen a subir (formatos soportados: jpg, jpeg, png, webp)
+- **Descripción**: Sube una imagen para un local específico. Si el local ya tiene una imagen, será reemplazada.
+- **Respuesta exitosa (200 OK)**:
+  ```json
+  {
+    "url": "https://res.cloudinary.com/.../local_1.jpg",
+    "public_id": "foodplaza/locales/local_1",
+    "mensaje": "Imagen subida exitosamente"
+  }
+  ```
+- **Errores**:
+  - 400 Bad Request: Si el archivo no es una imagen
+  - 404 Not Found: Si el local no existe
+  - 500 Internal Server Error: Si ocurre un error al procesar la imagen
+
+## Eliminar imagen de un Local
+- **Método**: `DELETE`
+- **Ruta**: `/api/locales/{local_id}/imagen`
+- **Parámetros de ruta**:
+  - `local_id` (requerido): ID del local del que se eliminará la imagen
+- **Descripción**: Elimina la imagen asociada a un local.
+- **Respuesta exitosa (200 OK)**:
+  ```json
+  {
+    "mensaje": "Imagen eliminada exitosamente"
+  }
+  ```
+- **Errores**:
+  - 404 Not Found: Si el local no existe o no tiene una imagen asociada
+  - 500 Internal Server Error: Si ocurre un error al eliminar la imagen

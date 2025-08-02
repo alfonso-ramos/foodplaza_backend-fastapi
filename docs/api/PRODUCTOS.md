@@ -121,3 +121,40 @@
 - **Respuestas**:
   - 204 No Content: Producto eliminado exitosamente
   - 404 Not Found: Si el producto no existe
+
+## Subir imagen de un Producto
+- **Método**: `POST`
+- **Ruta**: `/api/productos/{producto_id}/imagen`
+- **Parámetros de ruta**:
+  - `producto_id` (requerido): ID del producto al que se le asignará la imagen
+- **Cuerpo de la solicitud (form-data)**:
+  - `file` (requerido): Archivo de imagen a subir (formatos soportados: jpg, jpeg, png, webp)
+- **Descripción**: Sube una imagen para un producto específico. Si el producto ya tiene una imagen, será reemplazada.
+- **Respuesta exitosa (200 OK)**:
+  ```json
+  {
+    "url": "https://res.cloudinary.com/.../producto_1.jpg",
+    "public_id": "foodplaza/productos/producto_1",
+    "mensaje": "Imagen subida exitosamente"
+  }
+  ```
+- **Errores**:
+  - 400 Bad Request: Si el archivo no es una imagen
+  - 404 Not Found: Si el producto no existe
+  - 500 Internal Server Error: Si ocurre un error al procesar la imagen
+
+## Eliminar imagen de un Producto
+- **Método**: `DELETE`
+- **Ruta**: `/api/productos/{producto_id}/imagen`
+- **Parámetros de ruta**:
+  - `producto_id` (requerido): ID del producto del que se eliminará la imagen
+- **Descripción**: Elimina la imagen asociada a un producto.
+- **Respuesta exitosa (200 OK)**:
+  ```json
+  {
+    "mensaje": "Imagen eliminada exitosamente"
+  }
+  ```
+- **Errores**:
+  - 404 Not Found: Si el producto no existe o no tiene una imagen asociada
+  - 500 Internal Server Error: Si ocurre un error al eliminar la imagen
