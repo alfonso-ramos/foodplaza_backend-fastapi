@@ -52,7 +52,11 @@ def update_locale(db: Session, locale_id: int, locale_data):
     if not db_locale:
         return None
     
-    update_data = locale_data.dict(exclude_unset=True)
+    # Manejar tanto diccionarios como objetos Pydantic
+    if hasattr(locale_data, 'dict'):
+        update_data = locale_data.dict(exclude_unset=True)
+    else:
+        update_data = locale_data  # Ya es un diccionario
     
     # Verificar que el nuevo gerente exista y sea un gerente si se está actualizando
     if 'id_gerente' in update_data and update_data['id_gerente'] is not None:

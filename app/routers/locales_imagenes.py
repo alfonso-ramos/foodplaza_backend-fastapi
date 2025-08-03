@@ -19,7 +19,7 @@ async def subir_imagen_local(
     db: Session = Depends(get_db)
 ):
     # Verificar que el local existe
-    db_local = get_locale(db, local_id=local_id)
+    db_local = get_locale(db, locale_id=local_id)
     if not db_local:
         raise HTTPException(status_code=404, detail="Local no encontrado")
     
@@ -65,7 +65,7 @@ async def eliminar_imagen_local(
     db: Session = Depends(get_db)
 ):
     # Verificar que el local existe
-    db_local = get_locale(db, local_id=local_id)
+    db_local = get_locale(db, locale_id=local_id)
     if not db_local:
         raise HTTPException(status_code=404, detail="Local no encontrado")
     
