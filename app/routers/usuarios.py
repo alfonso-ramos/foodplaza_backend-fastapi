@@ -1,14 +1,44 @@
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from typing import List, Optional
 import os
 
 from .. import models, schemas
 from ..db import get_db
 from ..crud import usuarios as crud_usuarios
+from email_validator import validate_email, EmailNotValidError
 from ..services.cloudinary_service import upload_image, delete_image
 
 router = APIRouter()
+
+# Endpoint para buscar usuario por email
+@router.get("/buscar/", response_model=models.Usuario)
+async def buscar_usuario_por_email(
+    email: str = Query(..., description="Email del usuario a buscar"),
+    db: Session = Depends(get_db)
+):
+    """
+    Busca un usuario por su dirección de email.
+    No valida el formato del correo electrónico.
+    """
+    print(f"[DEBUG] Búsqueda de usuario con email: {email}")
+    
+    # Buscar usuario en la base de datos (case-insensitive)
+    print("[DEBUG] Buscando usuario en la base de datos...")
+    db_usuario = db.query(models.UsuarioDB).filter(
+        func.lower(models.UsuarioDB.email) == func.lower(email.strip())
+    ).first()
+    
+    if not db_usuario:
+        print(f"[DEBUG] Usuario con email '{email}' no encontrado")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuario no encontrado"
+        )
+    
+    print(f"[DEBUG] Usuario encontrado: ID={db_usuario.id}, Email={db_usuario.email}")
+    return db_usuario
 
 @router.post("/", response_model=models.Usuario, status_code=status.HTTP_201_CREATED)
 def crear_usuario(usuario: models.UsuarioCreate, db: Session = Depends(get_db)):

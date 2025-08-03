@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from passlib.context import CryptContext
 from datetime import datetime
 from ..models import UsuarioDB
@@ -12,7 +13,27 @@ def get_usuario(db: Session, usuario_id: int):
 
 def get_usuario_by_email(db: Session, email: str):
     """Obtiene un usuario por su email"""
-    return db.query(UsuarioDB).filter(UsuarioDB.email == email).first()
+    print(f"[DEBUG] Buscando usuario con email: {email}")
+    try:
+        # Primero intentamos con búsqueda exacta
+        usuario = db.query(UsuarioDB).filter(UsuarioDB.email == email).first()
+        
+        # Si no encontramos, intentamos con case-insensitive
+        if not usuario:
+            print(f"[DEBUG] Búsqueda exacta fallida, intentando case-insensitive")
+            usuario = db.query(UsuarioDB).filter(
+                func.lower(UsuarioDB.email) == func.lower(email)
+            ).first()
+        
+        if usuario:
+            print(f"[DEBUG] Usuario encontrado: ID={usuario.id}, Email={usuario.email}")
+        else:
+            print(f"[DEBUG] No se encontró usuario con email: {email}")
+            
+        return usuario
+    except Exception as e:
+        print(f"[ERROR] Error al buscar usuario por email {email}: {str(e)}")
+        return None
 
 def get_usuarios(db: Session, skip: int = 0, limit: int = 100, estado: str = None):
     """Lista usuarios con paginación y filtro opcional por estado"""

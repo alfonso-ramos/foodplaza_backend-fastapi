@@ -39,6 +39,7 @@ class LocaleDB(Base):
     # Relaciones
     plaza = relationship("PlazaDB", back_populates="locales")
     gerente = relationship("UsuarioDB")
+    pedidos = relationship("PedidoDB", back_populates="local", cascade="all, delete-orphan")
 
 # Modelos Pydantic
 class PlazaBase(BaseModel):
@@ -209,6 +210,17 @@ class UsuarioDB(Base):
     id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, nullable=False, index=True)
+    telefono = Column(String(20), nullable=True)
+    password = Column(String(255), nullable=False)
+    rol = Column(String(20), default='usuario')
+    estado = Column(String(20), default='activo')
+    fecha_creacion = Column(DateTime, server_default=func.now())
+    fecha_actualizacion = Column(DateTime, server_default=func.now(), onupdate=func.now())
+    imagen_url = Column(String(500), nullable=True)
+    imagen_public_id = Column(String(500), nullable=True)
+    
+    # Relaciones
+    pedidos = relationship("PedidoDB", back_populates="usuario", cascade="all, delete-orphan")
 
 # Modelos Pydantic para Usuarios
 class UsuarioBase(BaseModel):

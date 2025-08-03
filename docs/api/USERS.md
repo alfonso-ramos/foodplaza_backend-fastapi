@@ -1,5 +1,28 @@
 # Usuarios
 
+## Buscar usuario por email
+- **Método**: `GET`
+- **Ruta**: `/api/usuarios/buscar/`
+- **Descripción**: Busca un usuario por su dirección de email.
+- **Parámetros de consulta**:
+  - `email` (obligatorio): Email del usuario a buscar
+- **Respuestas**:
+  - 200 OK: Usuario encontrado
+    ```json
+    {
+      "id": 1,
+      "nombre": "Juan Pérez",
+      "email": "juan@ejemplo.com",
+      "telefono": "+521234567890",
+      "rol": "usuario",
+      "estado": "activo",
+      "fecha_creacion": "2025-07-28T12:00:00",
+      "fecha_actualizacion": "2025-07-28T12:00:00"
+    }
+    ```
+  - 400 Bad Request: Formato de email inválido
+  - 404 Not Found: Usuario no encontrado
+
 ## Crear un nuevo usuario
 - **Método**: `POST`
 - **Ruta**: `/api/usuarios`
