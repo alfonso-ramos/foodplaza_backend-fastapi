@@ -100,26 +100,14 @@ CREATE TABLE pedidos (
   id_usuario int NOT NULL,
   id_local int NOT NULL,
   fecha_pedido datetime DEFAULT CURRENT_TIMESTAMP,
-  id_estado_pedido int NOT NULL,
+  estado_pedido enum('pendiente','en_preparacion','listo_para_recoger','completado','cancelado') NOT NULL DEFAULT 'pendiente',
   total_pedido decimal(10,2) NOT NULL,
   instrucciones_especiales text,
-  id_metodo_pago int NOT NULL,
-  fecha_hora_recogida_estimada datetime NOT NULL,
+  tiempo_preparacion_estimado int NOT NULL,
   FOREIGN KEY (id_usuario) REFERENCES usuarios (id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (id_local) REFERENCES locales (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (id_estado_pedido) REFERENCES estados_pedido (id) ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY (id_metodo_pago) REFERENCES metodos_pago (id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
-CREATE TABLE detalle_pedidos (
-  id_pedido int NOT NULL,
-  id_producto int NOT NULL,
-  cantidad int NOT NULL,
-  precio_unitario decimal(10,2) NOT NULL,
-  PRIMARY KEY (id_pedido,id_producto),
-  FOREIGN KEY (id_pedido) REFERENCES pedidos (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (id_producto) REFERENCES productos (id) ON DELETE CASCADE ON UPDATE CASCADE
-);
 
 CREATE TABLE pagos (
   id int NOT NULL AUTO_INCREMENT PRIMARY KEY,

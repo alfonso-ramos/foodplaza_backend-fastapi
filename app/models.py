@@ -1,5 +1,5 @@
-from datetime import datetime
-from sqlalchemy import Column, Integer, String, ForeignKey, Text, DECIMAL, Boolean, Enum, TIMESTAMP
+from datetime import datetime, time
+from sqlalchemy import Column, Integer, String, ForeignKey, Text, DECIMAL, Boolean, Enum, TIMESTAMP, DateTime
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from pydantic import BaseModel, Field, condecimal, EmailStr, validator
@@ -55,7 +55,7 @@ class Plaza(PlazaBase):
     id: int
     
     class Config:
-        from_attributes = True  # Replaces orm_mode in Pydantic v2
+        from_attributes = True
 
 class LocaleBase(BaseModel):
     nombre: str = Field(..., max_length=100)
@@ -90,7 +90,44 @@ class Locale(LocaleBase):
     id: int
     
     class Config:
-        from_attributes = True  # Replaces orm_mode in Pydantic v2
+        from_attributes = True
+
+# Modelos SQLAlchemy para Pedidos
+# Modelo SQLAlchemy para Pedidos
+class PedidoDB(Base):
+    __tablename__ = 'pedidos'
+    
+    id = Column(Integer, primary_key=True, index=True)
+    id_usuario = Column(Integer, ForeignKey('usuarios.id', ondelete='CASCADE'), nullable=False)
+    id_local = Column(Integer, ForeignKey('locales.id', ondelete='CASCADE'), nullable=False)
+    fecha_pedido = Column(DateTime, server_default=func.now())
+    estado_pedido = Column(Enum('pendiente', 'en_preparacion', 'listo_para_recoger', 'completado', 'cancelado', 
+                              name='estados_pedido'), 
+                          nullable=False, 
+                          default='pendiente')
+    total_pedido = Column(DECIMAL(10, 2), nullable=False)
+    instrucciones_especiales = Column(Text, nullable=True)
+    tiempo_preparacion_estimado = Column(Integer, nullable=False)  # en minutos
+    
+    # Relaciones
+    usuario = relationship("UsuarioDB", back_populates="pedidos")
+    local = relationship("LocaleDB", back_populates="pedidos")
+    items = relationship("PedidoItemDB", back_populates="pedido", cascade="all, delete-orphan")
+
+# Modelo SQLAlchemy para Ítems de Pedido
+class PedidoItemDB(Base):
+    __tablename__ = 'pedido_items'
+    
+    id = Column(Integer, primary_key=True, index=True)
+    id_pedido = Column(Integer, ForeignKey('pedidos.id', ondelete='CASCADE'), nullable=False)
+    id_producto = Column(Integer, ForeignKey('productos.id', ondelete='CASCADE'), nullable=False)
+    cantidad = Column(Integer, nullable=False)
+    precio_unitario = Column(DECIMAL(10, 2), nullable=False)
+    instrucciones_especiales = Column(Text, nullable=True)
+    
+    # Relaciones
+    pedido = relationship("PedidoDB", back_populates="items")
+    producto = relationship("ProductoDB")
 
 # Modelos para Menús
 class MenuDB(Base):
@@ -140,7 +177,7 @@ class ProductoBase(BaseModel):
     nombre: str = Field(..., max_length=100)
     descripcion: Optional[str] = None
     precio: condecimal(gt=0, decimal_places=2)
-    disponible: bool = True
+    disponible: bool = Field(default=True, description="Si el producto está disponible para la venta")
     categoria: Optional[str] = Field(None, max_length=50)
     id_menu: int
     imagen_url: Optional[str] = None
@@ -172,16 +209,6 @@ class UsuarioDB(Base):
     id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, nullable=False, index=True)
-    telefono = Column(String(20), nullable=True)
-    password = Column(String(255), nullable=False)
-    imagen_url = Column(String(500), nullable=True)
-    imagen_public_id = Column(String(500), nullable=True)
-    rol = Column(Enum('usuario', 'gerente', 'administrador', name='roles_usuarios'), 
-                nullable=False, default='usuario')
-    estado = Column(Enum('activo', 'inactivo', name='estados_usuarios'),
-                   nullable=False, default='activo')
-    fecha_creacion = Column(TIMESTAMP, server_default=func.now())
-    fecha_actualizacion = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
 # Modelos Pydantic para Usuarios
 class UsuarioBase(BaseModel):
@@ -230,6 +257,52 @@ class Usuario(UsuarioBase):
     estado: str
     fecha_creacion: datetime
     fecha_actualizacion: datetime
+    
+    class Config:
+        from_attributes = True
+
+# Modelos Pydantic para Pedidos
+class PedidoItemBase(BaseModel):
+    id_producto: int
+    cantidad: int = Field(..., gt=0)
+    precio_unitario: condecimal(gt=0, decimal_places=2)
+    instrucciones_especiales: Optional[str] = None
+
+class PedidoItemCreate(PedidoItemBase):
+    pass
+
+class PedidoItemUpdate(BaseModel):
+    cantidad: Optional[int] = Field(None, gt=0)
+    instrucciones_especiales: Optional[str] = None
+
+class PedidoItem(PedidoItemBase):
+    id: int
+    id_pedido: int
+    
+    class Config:
+        from_attributes = True
+
+class PedidoBase(BaseModel):
+    id_local: int
+    instrucciones_especiales: Optional[str] = None
+    items: List[PedidoItemCreate]
+
+class PedidoCreate(PedidoBase):
+    pass
+
+class PedidoUpdate(BaseModel):
+    estado_pedido: Optional[str] = None
+    instrucciones_especiales: Optional[str] = None
+    tiempo_preparacion_estimado: Optional[int] = None
+
+class Pedido(PedidoBase):
+    id: int
+    id_usuario: int
+    fecha_pedido: datetime
+    estado_pedido: str
+    total_pedido: condecimal(gt=0, decimal_places=2)
+    tiempo_preparacion_estimado: int
+    items: List[PedidoItem] = []
     
     class Config:
         from_attributes = True

@@ -51,7 +51,15 @@ API RESTful para la gestión de plazas de comida, desarrollada con FastAPI y MyS
 
 ## 📚 Documentación de la API
 
-La documentación detallada de los endpoints está disponible en [docs/api/PLAZAS.md](docs/api/PLAZAS.md).
+La documentación detallada de los endpoints está organizada por módulos:
+
+- [Plazas](docs/api/PLAZAS.md) - Gestión de plazas de comida
+- [Locales](docs/api/LOCALES.md) - Gestión de locales dentro de las plazas
+- [Menús](docs/api/MENUS.md) - Gestión de menús de los locales
+- [Productos](docs/api/PRODUCTOS.md) - Gestión de productos en los menús
+- [Pedidos](docs/api/PEDIDOS.md) - Gestión de pedidos de los clientes
+- [Usuarios](docs/api/USERS.md) - Gestión de usuarios y autenticación
+- [Autenticación](docs/api/AUTHENTICATION.md) - Proceso de autenticación y autorización
 
 ## 🧪 Pruebas
 
@@ -68,14 +76,39 @@ foodplaza-fastapi/
 ├── app/
 │   ├── __init__.py
 │   ├── main.py              # Punto de entrada de la aplicación
-│   ├── db.py               # Configuración de la base de datos
-│   ├── models.py           # Modelos SQLAlchemy
-│   ├── schemas/            # Esquemas Pydantic
+│   ├── db.py                # Configuración de la base de datos
+│   ├── models.py            # Modelos SQLAlchemy
+│   ├── schemas/             # Esquemas Pydantic
 │   │   ├── __init__.py
-│   │   └── plazas.py
-│   └── crud/               # Operaciones de base de datos
+│   │   ├── plazas.py
+│   │   ├── locales.py
+│   │   ├── menus.py
+│   │   ├── productos.py
+│   │   ├── pedidos.py
+│   │   └── usuarios.py
+│   ├── crud/                # Operaciones de base de datos
+│   │   ├── __init__.py
+│   │   ├── plazas.py
+│   │   ├── locales.py
+│   │   ├── menus.py
+│   │   ├── productos.py
+│   │   ├── pedidos.py
+│   │   └── usuarios.py
+│   ├── routers/             # Rutas de la API
+│   │   ├── __init__.py
+│   │   ├── plazas.py
+│   │   ├── locales.py
+│   │   ├── menus.py
+│   │   ├── productos.py
+│   │   ├── pedidos.py
+│   │   └── usuarios.py
+│   ├── core/                # Configuraciones centrales
+│   │   ├── __init__.py
+│   │   ├── config.py        # Configuración de la aplicación
+│   │   └── security.py      # Utilidades de seguridad
+│   └── utils/               # Utilidades varias
 │       ├── __init__.py
-│       └── plazas.py
+│       └── cloudinary.py    # Manejo de imágenes en Cloudinary
 ├── tests/                  # Pruebas unitarias
 ├── docs/                   # Documentación
 │   └── api/

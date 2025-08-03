@@ -1,9 +1,11 @@
 # Productos
 
+Este documento describe los endpoints disponibles para la gestión de productos en el sistema FoodPlaza.
+
 ## Crear un nuevo producto
 - **Método**: `POST`
 - **Ruta**: `/api/productos`
-- **Descripción**: Crea un nuevo producto en el sistema.
+- **Descripción**: Crea un nuevo producto en el sistema. Los productos pueden estar disponibles o no según lo determine el restaurante.
 - **Cuerpo de la solicitud (JSON)**:
   ```json
   {
@@ -12,15 +14,17 @@
     "precio": 99.99,
     "disponible": true,
     "categoria": "Hamburguesas",
-    "id_menu": 1
+    "id_menu": 1,
+    "imagen_url": "https://ejemplo.com/imagen.jpg"
   }
   ```
 - **Validaciones**:
-  - nombre: obligatorio, máximo 100 caracteres
-  - precio: obligatorio, debe ser mayor a 0
-  - disponible: opcional, por defecto true
-  - id_menu: obligatorio, debe existir el menú
-  - categoria: opcional, máximo 50 caracteres
+  - `nombre`: obligatorio, máximo 100 caracteres
+  - `precio`: obligatorio, debe ser mayor a 0
+  - `disponible`: opcional, booleano que indica si el producto está disponible para la venta (default: true)
+  - `id_menu`: obligatorio, debe existir el menú
+  - `categoria`: opcional, máximo 50 caracteres
+  - `imagen_url`: opcional, URL de la imagen del producto
 - **Respuestas**:
   - 201 Created: Producto creado exitosamente
     ```json
@@ -60,12 +64,13 @@
 ## Obtener productos por menú
 - **Método**: `GET`
 - **Ruta**: `/api/productos/menu/{menu_id}`
+- **Descripción**: Obtiene los productos asociados a un menú específico, con opción de filtrar por disponibilidad.
 - **Parámetros de ruta**:
   - `menu_id` (requerido): ID del menú cuyos productos se quieren obtener
 - **Parámetros de consulta**:
-  - `skip` (opcional, default: 0): Número de registros a saltar
-  - `limit` (opcional, default: 100): Número máximo de registros a devolver
-  - `disponible` (opcional): Filtrar por disponibilidad (true/false)
+  - `skip` (opcional, default: 0): Número de registros a saltar (paginación)
+  - `limit` (opcional, default: 100): Número máximo de registros a devolver (paginación)
+  - `solo_disponibles` (opcional, default: true): Si es true, solo devuelve los productos marcados como disponibles
 - **Respuesta exitosa (200 OK)**:
   ```json
   [
