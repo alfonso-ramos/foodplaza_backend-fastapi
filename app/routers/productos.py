@@ -26,15 +26,15 @@ def read_productos_by_menu(
     menu_id: int, 
     skip: int = 0, 
     limit: int = 100, 
-    disponible: Optional[bool] = None,
+    solo_disponibles: bool = True,
     db: Session = Depends(get_db)
 ):
     return get_productos_by_menu(
-        db, 
+        db=db, 
         menu_id=menu_id, 
         skip=skip, 
         limit=limit, 
-        disponible=disponible
+        solo_disponibles=solo_disponibles
     )
 
 @router.post("/", response_model=Producto, status_code=status.HTTP_201_CREATED)
