@@ -59,13 +59,23 @@ def create_usuario(db: Session, usuario_data):
     return db_usuario
 
 def update_usuario(db: Session, usuario_id: int, usuario_data):
-    """Actualiza un usuario existente"""
+    """
+    Actualiza un usuario existente
+    
+    Args:
+        db: Sesión de base de datos
+        usuario_id: ID del usuario a actualizar
+        usuario_data: Datos a actualizar (puede ser un diccionario o un modelo Pydantic)
+    """
     db_usuario = get_usuario(db, usuario_id)
     if not db_usuario:
         return None
     
-    # Convertir el modelo a diccionario excluyendo los campos no establecidos
-    update_data = usuario_data.dict(exclude_unset=True)
+    # Convertir a diccionario si es un modelo Pydantic, de lo contrario usar como está
+    if hasattr(usuario_data, 'dict'):
+        update_data = usuario_data.dict(exclude_unset=True)
+    else:
+        update_data = dict(usuario_data)
     
     # Si se proporciona una nueva contraseña, hashearla
     if "password" in update_data:
@@ -73,7 +83,8 @@ def update_usuario(db: Session, usuario_id: int, usuario_data):
     
     # Actualizar los campos del usuario
     for key, value in update_data.items():
-        setattr(db_usuario, key, value)
+        if hasattr(db_usuario, key):  # Solo actualizar atributos que existan en el modelo
+            setattr(db_usuario, key, value)
     
     db.commit()
     db.refresh(db_usuario)

@@ -5,6 +5,7 @@ from app.routers.plazas_imagenes import router as plazas_imagenes_router
 from app.routers.locales_imagenes import router as locales_imagenes_router
 from app.routers.productos_imagenes import router as productos_imagenes_router
 from app.routers.pedidos import router as pedidos_router
+from app.routers.auth import router as auth_router
 from app.db import create_tables
 
 app = FastAPI()
@@ -23,6 +24,7 @@ app.include_router(plazas_imagenes_router)
 app.include_router(locales_imagenes_router)
 app.include_router(productos_imagenes_router)
 app.include_router(pedidos_router, prefix="/api")
+app.include_router(auth_router, prefix="/api/auth")
 
 # Crear tablas al iniciar
 @app.on_event("startup")
